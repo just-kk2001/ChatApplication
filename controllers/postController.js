@@ -125,19 +125,25 @@ export const togglePostLike = async (req, res) => {
       return res.status(404).json({ success: false, message: "Post not found" });
     }
 
-    const likeIndex = post.likes.indexOf(userId);
+    // Check if user already liked this post
+    const likeIndex = post.likes.findIndex((like) => like.toString() === userId);
+    let isLiked = false;
+
     if (likeIndex > -1) {
       post.likes.splice(likeIndex, 1);
+      isLiked = false;
     } else {
       post.likes.push(userId);
+      isLiked = true;
     }
 
     await post.save();
+    await post.populate("userId", "name email");
     await post.populate("likes", "name email");
 
     res.status(200).json({
       success: true,
-      message: likeIndex > -1 ? "Post unliked" : "Post liked",
+      message: isLiked ? "Post liked" : "Post unliked",
       data: post,
     });
   } catch (error) {
@@ -161,19 +167,25 @@ export const toggleCommentLike = async (req, res) => {
       return res.status(404).json({ success: false, message: "Comment not found" });
     }
 
-    const likeIndex = comment.likes.indexOf(userId);
+    // Check if user already liked this comment
+    const likeIndex = comment.likes.findIndex((like) => like.toString() === userId);
+    let isLiked = false;
+
     if (likeIndex > -1) {
       comment.likes.splice(likeIndex, 1);
+      isLiked = false;
     } else {
       comment.likes.push(userId);
+      isLiked = true;
     }
 
     await comment.save();
+    await comment.populate("userId", "name email");
     await comment.populate("likes", "name email");
 
     res.status(200).json({
       success: true,
-      message: likeIndex > -1 ? "Comment unliked" : "Comment liked",
+      message: isLiked ? "Comment liked" : "Comment unliked",
       data: comment,
     });
   } catch (error) {
