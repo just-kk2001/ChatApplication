@@ -138,13 +138,16 @@ export const togglePostLike = async (req, res) => {
     }
 
     await post.save();
-    await post.populate("userId", "name email");
-    await post.populate("likes", "name email");
+
+    // Fetch fresh document with populated fields
+    const updatedPost = await Post.findById(postId)
+      .populate("userId", "name email")
+      .populate("likes", "name email");
 
     res.status(200).json({
       success: true,
       message: isLiked ? "Post liked" : "Post unliked",
-      data: post,
+      data: updatedPost,
     });
   } catch (error) {
     console.error("❌ Error toggling like:", error);
@@ -180,13 +183,16 @@ export const toggleCommentLike = async (req, res) => {
     }
 
     await comment.save();
-    await comment.populate("userId", "name email");
-    await comment.populate("likes", "name email");
+
+    // Fetch fresh document with populated fields
+    const updatedComment = await Comment.findById(commentId)
+      .populate("userId", "name email")
+      .populate("likes", "name email");
 
     res.status(200).json({
       success: true,
       message: isLiked ? "Comment liked" : "Comment unliked",
-      data: comment,
+      data: updatedComment,
     });
   } catch (error) {
     console.error("❌ Error toggling comment like:", error);
@@ -217,13 +223,16 @@ export const editComment = async (req, res) => {
 
     comment.text = text.trim();
     await comment.save();
-    await comment.populate("userId", "name email");
-    await comment.populate("likes", "name email");
+
+    // Fetch fresh document with populated fields
+    const updatedComment = await Comment.findById(commentId)
+      .populate("userId", "name email")
+      .populate("likes", "name email");
 
     res.status(200).json({
       success: true,
       message: "Comment updated successfully",
-      data: comment,
+      data: updatedComment,
     });
   } catch (error) {
     console.error("❌ Error editing comment:", error);
