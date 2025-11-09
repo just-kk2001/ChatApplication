@@ -24,8 +24,9 @@ const ensureDBConnection = async (req, res, next) => {
     try {
       await connectDB();
       dbConnected = true;
+      console.log("✅ Database connected successfully");
     } catch (error) {
-      console.error("MongoDB connection failed:", error.message);
+      console.error("❌ MongoDB connection failed:", error.message);
       return res.status(500).json({ error: "Database connection failed" });
     }
   }
@@ -50,8 +51,8 @@ app.use((req, res) => {
 
 // Error handler
 app.use((err, req, res, next) => {
-  console.error(err);
-  res.status(500).json({ error: "Internal server error" });
+  console.error("Error:", err);
+  res.status(500).json({ error: "Internal server error", message: err.message });
 });
 
 export default app;
